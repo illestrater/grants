@@ -20,148 +20,261 @@ function validateUsername(string) {
 }
 
 const transporter = nodemailer.createTransport({
-  host: 'email-smtp.us-east-1.amazonaws.com',
+  host: "email-smtp.us-east-1.amazonaws.com",
   port: 465,
   secure: true,
   auth: {
     user: ENV.SES_USER,
-    pass: ENV.SES_PASS
-  }
+    pass: ENV.SES_PASS,
+  },
 });
 
 exports.register = async (req, res) => {
   if (!validateUsername(req.body.username) || req.body.username.length > 15) {
-    return res.json({ error: 'Invalid username' });
+    return res.json({ error: "Invalid username" });
   }
 
-  if (req.body.username.length > 15) return res.json({ error: 'That username is too long' });
+  if (req.body.username.length > 15)
+    return res.json({ error: "That username is too long" });
 
-  const exists = await User.findOne({ email: { $regex: new RegExp(`^${ req.body.email.toLowerCase().replace(/\s+/g, '') }$`, 'i') } })
-  if (exists) return res.json({ error: 'That email already exists' });
+  const exists = await User.findOne({
+    email: {
+      $regex: new RegExp(
+        `^${req.body.email.toLowerCase().replace(/\s+/g, "")}$`,
+        "i"
+      ),
+    },
+  });
+  if (exists) return res.json({ error: "That email already exists" });
 
-  const exists2 = await User.findOne({ username: { $regex: new RegExp(`^${ req.body.username.toLowerCase().replace(/\s+/g, '') }$`, 'i') } })
-  if (exists2 && exists2.username.toLowerCase() === req.body.username.toLowerCase().replace(/\s+/g, '')) return res.json({ error: 'That username already exists' });
+  const exists2 = await User.findOne({
+    username: {
+      $regex: new RegExp(
+        `^${req.body.username.toLowerCase().replace(/\s+/g, "")}$`,
+        "i"
+      ),
+    },
+  });
+  if (
+    exists2 &&
+    exists2.username.toLowerCase() ===
+      req.body.username.toLowerCase().replace(/\s+/g, "")
+  )
+    return res.json({ error: "That username already exists" });
 
   if (req.body.password !== req.body.confirmPassword) {
-    return res.json({ error: 'Passwords do not match' });
+    return res.json({ error: "Passwords do not match" });
   }
 
   const user = new User({
-    first:       req.body.first,
-    last:        req.body.last,
-    username:    req.body.username,
-    email:       req.body.email,
-    password:    req.body.password,
-    committee:   false,
-    emailToken: crypto.randomBytes(32).toString('hex')
+    first: req.body.first,
+    last: req.body.last,
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    committee: false,
+    emailToken: crypto.randomBytes(32).toString("hex"),
   });
 
   return user.save((err, data) => {
-    if (err) return res.json({ error: 'There was an unknown issue, please notify sevens@grants.art' });
+    if (err)
+      return res.json({
+        error: "There was an unknown issue, please notify sevens@grants.art",
+      });
 
-    transporter.sendMail(templates.verification(user.email, user.username, user.emailToken));
+    transporter.sendMail(
+      templates.verification(user.email, user.username, user.emailToken)
+    );
 
-    const token = jsonwebtoken.sign({
+    const token = jsonwebtoken.sign(
+      {
         username: user.username,
-        id:       data.id,
-    }, ENV.JWT);
-    return res.json({ username: user.username, id: user.id, token, committee: false });
+        id: data.id,
+      },
+      ENV.JWT
+    );
+    return res.json({
+      username: user.username,
+      id: user.id,
+      token,
+      committee: false,
+    });
   });
 };
 
 exports.login = (req, res, next) => {
-  User.findOne({
-    $or: [
-      { email: { $regex: new RegExp(`^${ req.body.username.toLowerCase().trim() }$`, 'i') } },
-      { username: { $regex: new RegExp(`^${ req.body.username.toLowerCase().trim() }$`, 'i') } }
-    ]
-  }, (err, user) => {
+  User.findOne(
+    {
+      $or: [
+        {
+          email: {
+            $regex: new RegExp(
+              `^${req.body.username.toLowerCase().trim()}$`,
+              "i"
+            ),
+          },
+        },
+        {
+          username: {
+            $regex: new RegExp(
+              `^${req.body.username.toLowerCase().trim()}$`,
+              "i"
+            ),
+          },
+        },
+      ],
+    },
+    (err, user) => {
       if (err) {
         return next(err);
       } else if (!user) {
-        return res.status(401).json(`Could not find user: ${ req.body.username }`);
-      } else if ((user.username.toLowerCase() !== req.body.username.toLowerCase().trim() && user.email.toLowerCase() !== req.body.username.toLowerCase().trim())) {
-        return res.status(401).json(`Could not find user: ${ req.body.username }`);
+        return res
+          .status(401)
+          .json(`Could not find user: ${req.body.username}`);
+      } else if (
+        user.username.toLowerCase() !==
+          req.body.username.toLowerCase().trim() &&
+        user.email.toLowerCase() !== req.body.username.toLowerCase().trim()
+      ) {
+        return res
+          .status(401)
+          .json(`Could not find user: ${req.body.username}`);
       } else if (user.hashPassword(req.body.password) !== user.password) {
-        return res.status(401).json('Invalid password');
+        return res.status(401).json("Invalid password");
       } else if (user.banned) {
-        return res.status(401).json('Your account is banned');
+        return res.status(401).json("Your account is banned");
       }
 
-      const token = jsonwebtoken.sign({
-          id:       user.id,
+      const token = jsonwebtoken.sign(
+        {
+          id: user.id,
           username: user.username,
-          wallet:   user.wallet,
-      }, ENV.JWT);
+          wallet: user.wallet,
+        },
+        ENV.JWT
+      );
 
-      return res.json({ username: user.username, id: user.id, token, wallet: user.wallet, committee: user.committee });
-  });
+      return res.json({
+        username: user.username,
+        id: user.id,
+        token,
+        wallet: user.wallet,
+        committee: user.committee,
+      });
+    }
+  );
 };
 
 exports.getAccount = (req, res, next) => {
   auth(req.headers.authorization, res, (jwt) => {
     User.findById(jwt.id, (err, user) => {
       if (err) return res.json(err);
-      if (!user) return res.status(401).json({ err: 'Authentication error' }); 
+      if (!user) return res.status(401).json({ err: "Authentication error" });
       else {
         return ProgramApplicant.find({ user: user._id }, (err2, data) => {
           if (err2) return res.status(500).json(err);
           return res.json({ user, applications: data });
-        }).select('-flagged -approvalCount -rejectCount -rejected -approved')
+        }).select("-flagged -approvalCount -rejectCount -rejected -approved");
       }
-    }).select('-password -salt -emailToken -committee');
+    }).select("-password -salt -emailToken -committee");
   });
-}
+};
 
 exports.getProfile = (req, res, next) => {
-  User.findOne({ username: { $regex: new RegExp(`^${ req.body.username.toLowerCase().trim() }$`, 'i') } }, (err, user) => {
-    if (err) return res.json(err);
-    if (!user) return res.json({ error: 'User does not exist' }); 
-    return res.json({ success: user });
-  }).select('username first last artistName city country website twitter twitterVerified instagram about');
-}
+  User.findOne(
+    {
+      username: {
+        $regex: new RegExp(`^${req.body.username.toLowerCase().trim()}$`, "i"),
+      },
+    },
+    (err, user) => {
+      if (err) return res.json(err);
+      if (!user) return res.json({ error: "User does not exist" });
+      return res.json({ success: user });
+    }
+  ).select(
+    "username first last artistName city country website twitter twitterVerified instagram about"
+  );
+};
 
 exports.searchUsers = (req, res) => {
-  User.find({
+  User.find(
+    {
       $or: [
-          { username: new RegExp(req.body.user, 'i') },
-          { first: new RegExp(req.body.user, 'i') },
-          { last: new RegExp(req.body.user, 'i') }
-      ]
-  }, (err, users) => {
-    if (err) res.status(500).json({ error: errorMessages.parse(err) });
-    return res.json(users);
-  }).select('id first last username')
-  .limit(10)
+        { username: new RegExp(req.body.user, "i") },
+        { first: new RegExp(req.body.user, "i") },
+        { last: new RegExp(req.body.user, "i") },
+      ],
+    },
+    (err, users) => {
+      if (err) res.status(500).json({ error: errorMessages.parse(err) });
+      return res.json(users);
+    }
+  )
+    .select("id first last username")
+    .limit(10);
 };
 
 exports.updateUser = async (req, res) => {
   auth(req.headers.authorization, res, (jwt) => {
     User.findById(jwt.id, async (err, user) => {
       if (err) return res.json(err);
-      if (!user) return res.status(401).json({ error: 'Authentication error' });
+      if (!user) return res.status(401).json({ error: "Authentication error" });
 
-      if (!req.body.username || !req.body.email) res.json({ error: 'You are missing some required fields' });
+      if (!req.body.username || !req.body.email)
+        res.json({ error: "You are missing some required fields" });
 
-      const existingApplication = await ProgramApplicant.findOne({ user: user._id, finalized: false });
-      if (existingApplication && (!req.body.first || !req.body.last || !req.body.birthYear || !req.body.artistName || !req.body.country ||
-                                 !req.body.countryCode || !req.body.city || !req.body.website || !req.body.twitter || !req.body.instagram)) {
-        return res.json({ error: 'You must have all fields completed until your art submission is processed' });
+      const existingApplication = await ProgramApplicant.findOne({
+        user: user._id,
+        finalized: false,
+      });
+      if (
+        existingApplication &&
+        (!req.body.first ||
+          !req.body.last ||
+          !req.body.birthYear ||
+          !req.body.artistName ||
+          !req.body.country ||
+          !req.body.countryCode ||
+          !req.body.city ||
+          !req.body.website ||
+          !req.body.twitter ||
+          !req.body.instagram)
+      ) {
+        return res.json({
+          error:
+            "You must have all fields completed until your art submission is processed",
+        });
       }
 
-      const exists = await User.findOne({ email: { $regex: new RegExp(`^${ req.body.email.toLowerCase().trim() }$`, 'i') } })
-      if (exists && !exists._id.equals(user._id)) return res.json({ error: 'That email already exists' });
-      
-      const exists2 = await User.findOne({ username: { $regex: new RegExp(`^${ req.body.username.toLowerCase().trim() }$`, 'i') } })
-      if (exists2 && !exists2._id.equals(user._id)) return res.json({ error: 'That username already exists' });
+      const exists = await User.findOne({
+        email: {
+          $regex: new RegExp(`^${req.body.email.toLowerCase().trim()}$`, "i"),
+        },
+      });
+      if (exists && !exists._id.equals(user._id))
+        return res.json({ error: "That email already exists" });
+
+      const exists2 = await User.findOne({
+        username: {
+          $regex: new RegExp(
+            `^${req.body.username.toLowerCase().trim()}$`,
+            "i"
+          ),
+        },
+      });
+      if (exists2 && !exists2._id.equals(user._id))
+        return res.json({ error: "That username already exists" });
 
       user.username = req.body.username;
       if (user.email !== req.body.email.toLowerCase().trim()) {
-        const emailToken = crypto.randomBytes(32).toString('hex');
+        const emailToken = crypto.randomBytes(32).toString("hex");
         user.emailVerified = false;
         user.emailToken = emailToken;
         user.email = req.body.email.toLowerCase().trim();
-        transporter.sendMail(templates.verification(user.email, user.username, user.emailToken));
+        transporter.sendMail(
+          templates.verification(user.email, user.username, user.emailToken)
+        );
       }
 
       user.first = req.body.first;
@@ -173,13 +286,18 @@ exports.updateUser = async (req, res) => {
       user.about = req.body.about;
       user.city = req.body.city;
       user.website = req.body.website;
-      if (req.body.twitter && user.twitter && req.body.twitter.toLowerCase().trim() !== user.twitter.toLowerCase().trim()) {
+      if (
+        req.body.twitter &&
+        user.twitter &&
+        req.body.twitter.toLowerCase().trim() !==
+          user.twitter.toLowerCase().trim()
+      ) {
         user.twitterVerified = false;
       }
       user.twitter = req.body.twitter;
       user.instagram = req.body.instagram;
       user.save();
-      return res.json('Profile updated');
+      return res.json("Profile updated");
     });
   });
 };
@@ -188,9 +306,11 @@ exports.sendEmailVerification = async (req, res) => {
   auth(req.headers.authorization, res, (jwt) => {
     User.findById(jwt.id, (err, user) => {
       if (err) return res.json(err);
-      if (!user) return res.status(401).json({ err: 'Authentication error' });
-      transporter.sendMail(templates.verification(user.email, user.username, user.emailToken));
-      return res.json('Verification sent');
+      if (!user) return res.status(401).json({ err: "Authentication error" });
+      transporter.sendMail(
+        templates.verification(user.email, user.username, user.emailToken)
+      );
+      return res.json("Verification sent");
     });
   });
 };
@@ -199,7 +319,7 @@ exports.verifyWallet = (req, res, next) => {
   auth(req.headers.authorization, res, (jwt) => {
     User.findById(jwt.id, (err, user) => {
       if (err) return res.json(err);
-      if (!user) return res.status(401).json({ err: 'Authentication error' }); 
+      if (!user) return res.status(401).json({ err: "Authentication error" });
       else {
         const signedAddress = web3.eth.accounts.recover('Verify wallet address for Sevens Foundation', req.body.signature);
         if (signedAddress.toLowerCase() === req.body.address.toLowerCase()) {
@@ -212,59 +332,88 @@ exports.verifyWallet = (req, res, next) => {
       }
     });
   });
-}
+};
 
 exports.verifyEmail = (req, res, next) => {
   User.findOne({ emailToken: req.body.token }, (err, user) => {
     if (err) return res.json(err);
-    if (!user) return res.status(401).json({ err: 'Authentication error' }); 
+    if (!user) return res.status(401).json({ err: "Authentication error" });
     else {
       user.emailVerified = true;
       user.save();
       return res.json(true);
     }
   });
-}
+};
 
 exports.requestPassword = (req, res, next) => {
-  User.findOne({
+  User.findOne(
+    {
       $or: [
-          { email: { $regex: new RegExp(`^${ req.body.recovery.toLowerCase().trim() }$`, 'i') } },
-          { username: { $regex: new RegExp(`^${ req.body.recovery.toLowerCase().trim() }$`, 'i') } }
-      ]
-  }, (err, user) => {
+        {
+          email: {
+            $regex: new RegExp(
+              `^${req.body.recovery.toLowerCase().trim()}$`,
+              "i"
+            ),
+          },
+        },
+        {
+          username: {
+            $regex: new RegExp(
+              `^${req.body.recovery.toLowerCase().trim()}$`,
+              "i"
+            ),
+          },
+        },
+      ],
+    },
+    (err, user) => {
       if (err) {
-          return next(err);
+        return next(err);
       } else if (!user) {
-          return res.status(401).json(`Could not find user: ${ req.body.username }`);
-      } else if ((user.username.toLowerCase() !== req.body.recovery.toLowerCase().trim() && user.email.toLowerCase() !== req.body.recovery.toLowerCase().trim())) {
-          return res.status(401).json(`Could not find user: ${ req.body.username }`);
+        return res
+          .status(401)
+          .json(`Could not find user: ${req.body.username}`);
+      } else if (
+        user.username.toLowerCase() !==
+          req.body.recovery.toLowerCase().trim() &&
+        user.email.toLowerCase() !== req.body.recovery.toLowerCase().trim()
+      ) {
+        return res
+          .status(401)
+          .json(`Could not find user: ${req.body.username}`);
       } else {
-        user.recoveryToken = crypto.randomBytes(32).toString('hex');
+        user.recoveryToken = crypto.randomBytes(32).toString("hex");
         const expires = new Date();
         expires.setHours(expires.getHours() + 24);
         user.recoveryExpiration = expires;
         user.save();
-        transporter.sendMail(templates.passRecovery(user.email, user.username, user.recoveryToken));
+        transporter.sendMail(
+          templates.passRecovery(user.email, user.username, user.recoveryToken)
+        );
       }
 
       return res.json(true);
-  });
+    }
+  );
 };
 
 exports.recoverPassword = (req, res, next) => {
   User.findOne({ recoveryToken: req.body.token }, (err, user) => {
-      if (err) {
-          return next(err);
-      } else if (!user) {
-          return res.status(401).json({ error: `Invalid request` });
-      }
+    if (err) {
+      return next(err);
+    } else if (!user) {
+      return res.status(401).json({ error: `Invalid request` });
+    }
 
-      user.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
-      user.password = crypto.pbkdf2Sync(req.body.password, user.salt, 10000, 64, 'sha1').toString('base64');
-      user.save();
+    user.salt = new Buffer(crypto.randomBytes(16).toString("base64"), "base64");
+    user.password = crypto
+      .pbkdf2Sync(req.body.password, user.salt, 10000, 64, "sha1")
+      .toString("base64");
+    user.save();
 
-      return res.json({ success: 'Password changed' });
+    return res.json({ success: "Password changed" });
   });
 };
 
@@ -294,34 +443,42 @@ exports.newPassword = (req, res, next) => {
 exports.twitter = async (req, res, next) => {
   const jwt = auth(req.headers.authorization, res, (jwt) => jwt);
   const user = await User.findById(jwt.id);
-  if (!user || !jwt) return res.json({ error: 'Authentication error' });
+  if (!user || !jwt) return res.json({ error: "Authentication error" });
 
-  return await fetch(`https://api.twitter.com/2/tweets/search/recent?query=from%3A${ req.body.twitter }&max_results=10`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${ ENV.TWITTER_TOKEN }`,
+  return await fetch(
+    `https://api.twitter.com/2/tweets/search/recent?query=from%3A${req.body.twitter}&max_results=10`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ENV.TWITTER_TOKEN}`,
+      },
     }
-  }).then(res => res.json())
-  .then(json => {
-    if (json && json.data) {
-      let found = false;
-      json.data.forEach(tweet => {
-        if (tweet && tweet.text && tweet.text.indexOf('Verifying my @SevensGrant account') > -1) found = true;
-      })
+  )
+    .then((res) => res.json())
+    .then((json) => {
+      if (json && json.data) {
+        let found = false;
+        json.data.forEach((tweet) => {
+          if (
+            tweet &&
+            tweet.text &&
+            tweet.text.indexOf("Verifying my @SevensGrant account") > -1
+          )
+            found = true;
+        });
 
-      if (found) {
-        user.twitterVerified = true;
-        user.save();
-        return res.json({ success: 'Verified' });
+        if (found) {
+          user.twitterVerified = true;
+          user.save();
+          return res.json({ success: "Verified" });
+        }
+
+        return res.json({ error: "Issue verifying" });
       }
 
-      return res.json({ error: 'Issue verifying' });
-    }
-
-    return res.json({ error: 'Issue verifying' });
-  })
-}
-
+      return res.json({ error: "Issue verifying" });
+    });
+};
 
 // FIX BAD MAPPING
 
@@ -356,7 +513,6 @@ exports.twitter = async (req, res, next) => {
 //     })
 //   });
 // })
-
 
 // setTimeout(() => {
 //   Applicant.distinct('country').exec((err, records) => {

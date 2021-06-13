@@ -1,22 +1,28 @@
+<<<<<<< HEAD
 import React, { useEffect, useReducer, useState, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useParams, useHistory } from "react-router-dom";
 import { useStoreState } from 'easy-peasy';
+=======
+import React, { useEffect, useReducer, useState, useRef } from "react";
+import { useSwipeable } from "react-swipeable";
+import { useParams, useLocation, useHistory } from "react-router-dom";
+import { useStoreState } from "easy-peasy";
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 import { Link } from "react-router-dom";
-import ReactAutolinker from 'react-autolinker';
-import GenesisNFT from './ExhibitionNFT.js';
-import Resizer from './Tools/Resizer.js';
-import { apiUrl } from '../baseUrl';
+import ReactAutolinker from "react-autolinker";
+import GenesisNFT from "./ExhibitionNFT.js";
+import Resizer from "./Tools/Resizer.js";
+import { apiUrl } from "../baseUrl";
 
-import Web from '../assets/website.png';
-import Twitter from '../assets/twitter.png';
-import Instagram from '../assets/instagram.png';
+import Web from "../assets/website.png";
+import Twitter from "../assets/twitter.png";
+import Instagram from "../assets/instagram.png";
 
-import '../styles.scss';
+import "../styles.scss";
 
-function openLink(page)
-{
-  let win = window.open(page, '_blank');
+function openLink(page) {
+  let win = window.open(page, "_blank");
   win.focus();
 }
 
@@ -24,8 +30,12 @@ const NFT = React.memo(GenesisNFT);
 
 export default function Exhibition({ updateScroll }) {
   const history = useHistory();
+<<<<<<< HEAD
   const small = useStoreState(state => state.app.small);
   const nftRef = useRef();
+=======
+  const small = useStoreState((state) => state.app.small);
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
   const { url, id } = useParams();
   const order = Number(id);
 
@@ -34,6 +44,7 @@ export default function Exhibition({ updateScroll }) {
   const [enterId, setEnterId] = useState(null);
   const [ethPrice, setEthPrice] = useState(null);
   useEffect(() => {
+<<<<<<< HEAD
     updateScroll(false);
     fetch(`${ apiUrl() }/program/getGallery`, {
       method: 'POST',
@@ -62,12 +73,25 @@ export default function Exhibition({ updateScroll }) {
       }
     });
   }, [])
+=======
+    fetch(`${apiUrl()}/program/getGallery`, {
+      method: "POST",
+      body: JSON.stringify({ program: url }),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json && json.gallery) setGallery(json.gallery);
+        if (json && json.name) setExhibition({ ...json, gallery: undefined });
+      });
+  }, []);
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 
   const [preload, dispatch] = useReducer((preload, { type, value }) => {
-    if (type === 'add') {
+    if (type === "add") {
       return [...preload, value];
-    } else if (type === 'update') {
-      const index = preload.findIndex(e => Number(e.order) === value.order);
+    } else if (type === "update") {
+      const index = preload.findIndex((e) => Number(e.order) === value.order);
       if (index >= 0) {
         const updated = preload[index];
         if (updated) {
@@ -75,12 +99,12 @@ export default function Exhibition({ updateScroll }) {
           return [
             ...preload.slice(0, index),
             updated,
-            ...preload.slice(index + 1)
+            ...preload.slice(index + 1),
           ];
         }
       }
-    } else if (type === 'remove') {
-      return preload.filter(e => Number(e.order) !== value.order);
+    } else if (type === "remove") {
+      return preload.filter((e) => Number(e.order) !== value.order);
     }
 
     return preload;
@@ -94,79 +118,111 @@ export default function Exhibition({ updateScroll }) {
       let after = index + 4;
       if (after >= gallery.length) after = gallery.length;
       for (let i = before; i <= after; i++) {
-        const imageType = gallery[i - 1].art.split('.')[1]
-        if (imageType === 'mp4' || imageType === 'mov') {
-          dispatch({ type: 'add', value: { order: i, image: null, isVideo: true } });
-          fetch(`https://cdn.grants.art/${ gallery[i - 1].art }`).then(async (res) => {
-            const blob = await res.blob();
-            const image = window.URL.createObjectURL(blob);
-            dispatch({ type: 'update', value: { order: i, image } });
+        const imageType = gallery[i - 1].art.split(".")[1];
+        if (imageType === "mp4" || imageType === "mov") {
+          dispatch({
+            type: "add",
+            value: { order: i, image: null, isVideo: true },
           });
+          fetch(`https://cdn.grants.art/${gallery[i - 1].art}`).then(
+            async (res) => {
+              const blob = await res.blob();
+              const image = window.URL.createObjectURL(blob);
+              dispatch({ type: "update", value: { order: i, image } });
+            }
+          );
         } else {
           let image;
           image = new Image();
-          image.src = `https://cdn.grants.art/${ gallery[i - 1].art }`;
-          dispatch({ type: 'add', value: { order: i, image } });
+          image.src = `https://cdn.grants.art/${gallery[i - 1].art}`;
+          dispatch({ type: "add", value: { order: i, image } });
         }
       }
     }
+<<<<<<< HEAD
   }, [enterId])
+=======
+  }, [gallery]);
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 
   function updatePreload(direction, currentToken) {
     let inc;
-    if (direction === 'next') {
-      dispatch({ type: 'remove', value: { order: currentToken - 4 }});
+    if (direction === "next") {
+      dispatch({ type: "remove", value: { order: currentToken - 4 } });
       inc = 5;
-    } else if (direction === 'previous') {
-      dispatch({ type: 'remove', value: { order: currentToken + 4 }});
+    } else if (direction === "previous") {
+      dispatch({ type: "remove", value: { order: currentToken + 4 } });
       inc = -5;
     }
 
     const newLoad = gallery[currentToken - 1 + inc];
-    let imageType
-    if (newLoad) imageType = newLoad.art.split('.')[1];
+    let imageType;
+    if (newLoad) imageType = newLoad.art.split(".")[1];
 
-    if (newLoad && (imageType === 'mp4' || imageType === 'mov')) {
-      dispatch({ type: 'add', value: { order: currentToken + inc, image: null, isVideo: true } });
-      fetch(`https://cdn.grants.art/${ newLoad.art }`).then(async (res) => {
+    if (newLoad && (imageType === "mp4" || imageType === "mov")) {
+      dispatch({
+        type: "add",
+        value: { order: currentToken + inc, image: null, isVideo: true },
+      });
+      fetch(`https://cdn.grants.art/${newLoad.art}`).then(async (res) => {
         const blob = await res.blob();
         const image = window.URL.createObjectURL(blob);
-        dispatch({ type: 'update', value: { order: currentToken + inc, image } });
+        dispatch({
+          type: "update",
+          value: { order: currentToken + inc, image },
+        });
       });
     } else if (newLoad) {
       const image = new Image();
-      image.src = `https://cdn.grants.art/${ newLoad.art }`;
-      dispatch({ type: 'add', value: { order: currentToken + inc, image } });
+      image.src = `https://cdn.grants.art/${newLoad.art}`;
+      dispatch({ type: "add", value: { order: currentToken + inc, image } });
     }
   }
 
   function switchPage(direction) {
     if (gallery) {
-      if (id === '1' && direction === 'previous') return gallery.length;
-      else if (gallery && direction === 'next' && Number(id) === gallery.length) return 1;
-      else if (direction === 'next') return Number(id) + 1;
+      if (id === "1" && direction === "previous") return gallery.length;
+      else if (gallery && direction === "next" && Number(id) === gallery.length)
+        return 1;
+      else if (direction === "next") return Number(id) + 1;
       else return Number(id) - 1;
     }
   }
 
   let foundSrc, src1, src2, src3;
   if (preload && preload.length) {
-    foundSrc = preload.find(e => { return (e.isVideo && e.order === (order - 1)) });
+    foundSrc = preload.find((e) => {
+      return e.isVideo && e.order === order - 1;
+    });
     src1 = foundSrc ? foundSrc.image : null;
 
-    foundSrc = preload.find(e => { return (e.isVideo && e.order === (order)) });
+    foundSrc = preload.find((e) => {
+      return e.isVideo && e.order === order;
+    });
     src2 = foundSrc ? foundSrc.image : null;
 
-    foundSrc = preload.find(e => { return (e.isVideo && e.order === (order + 1)) });
+    foundSrc = preload.find((e) => {
+      return e.isVideo && e.order === order + 1;
+    });
     src3 = foundSrc ? foundSrc.image : null;
   }
 
   const handlers = useSwipeable({
     onSwipedRight: (eventData) => {
-      if (id) { updatePreload('previous', order); history.push(`/${ url }/${ switchPage('previous') }`) }
+      if (id) {
+        updatePreload("previous", order);
+        history.push(`/${url}/${switchPage("previous")}`);
+      }
     },
     onSwipedLeft: (eventData) => {
+<<<<<<< HEAD
       if (id) { updatePreload('next', order); history.push(`/${ url }/${ switchPage('next') }`) }
+=======
+      if (id) {
+        updatePreload("next", order);
+        history.push(`/${url}/${switchPage("next")}`);
+      }
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
     },
     preventDefaultTouchmoveEvent: true,
   });
@@ -176,56 +232,90 @@ export default function Exhibition({ updateScroll }) {
   }
 
   return (
-    <div className='content-block' { ...handlers }>
+    <div className="content-block" {...handlers}>
       <Resizer />
-      <div className='flex'>
-        { id &&
-          <Link to={ `/${ url }/${ switchPage('previous') }` } className='relative margin-top-s' onClick={ () => updatePreload('previous', order) }>
-            <div className='round'>
-              <div id='cta'>
-                <span className='arrow-left segunda previous'></span>
-                <span className='arrow-left primera previous'></span>
+      <div className="flex">
+        {id && (
+          <Link href={`/${url}/${switchPage("previous")}`}>
+            <a
+              className="relative margin-top-s"
+              onClick={() => updatePreload("previous", order)}
+            >
+              <div className="round">
+                <div id="cta">
+                  <span className="arrow-left segunda previous"></span>
+                  <span className="arrow-left primera previous"></span>
+                </div>
               </div>
-            </div>
+            </a>
           </Link>
-        }
-        <div className='flex-full'>
-          <div className='center text-m text-b margin-top-minus'>
-            { exhibition.organizer &&
-              <Link to={ `/curator/${ exhibition.organizerUrl }` } className='text-rainbow text-s margin-top-minus'>
-                <strong>{ exhibition.organizer }</strong>
+        )}
+        <div className="flex-full">
+          <div className="center text-m text-b margin-top-minus">
+            {exhibition.organizer && (
+              <Link to={`/curator/${exhibition.organizerUrl}`}>
+                <a className="text-rainbow text-s margin-top-minus">
+                  <strong>{exhibition.organizer}</strong>
+                </a>
               </Link>
-            }
-            { exhibition.name && <div><strong>{ exhibition.name } Exhibition</strong></div> }
+            )}
+            {exhibition.name && (
+              <div>
+                <strong>{exhibition.name} Exhibition</strong>
+              </div>
+            )}
           </div>
         </div>
-        { id &&
-          <Link to={ `/${ url }/${ switchPage('next') }` } className='relative margin-top-s' onClick={ () => updatePreload('next', order) }>
-            <div className='round arrow-right'>
-              <div id='cta'>
-                <span className='arrow primera next'></span>
-                <span className='arrow segunda next'></span>
+        {id && (
+          <Link
+            to={`/${url}/${switchPage("next")}`}
+            className="relative margin-top-s"
+            onClick={() => updatePreload("next", order)}
+          >
+            <div className="round arrow-right">
+              <div id="cta">
+                <span className="arrow primera next"></span>
+                <span className="arrow segunda next"></span>
               </div>
             </div>
           </Link>
-        }
+        )}
       </div>
+<<<<<<< HEAD
       { !id &&
         <div className='line-breaks'>
           { (gallery && gallery.length) ?
             <div className='margin-top-l center'>
               <Link to={ `/${ url }/${ enterId  }` } className='button'>
                 <span className='text-l'>Enter Gallery</span>
+=======
+      {!id && (
+        <div className="line-breaks">
+          {gallery && gallery.length ? (
+            <div className="margin-top-l center">
+              <Link
+                to={`/${url}/${
+                  Math.floor(
+                    Math.random() * (gallery.length ? gallery.length : 1)
+                  ) + 1
+                }`}
+                className="button"
+              >
+                <span className="text-l">Enter Gallery</span>
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
               </Link>
               <div className='margin-top'>{ gallery.length } Artworks</div>
             </div>
-            :
-            <div className='flex center'>
-              { (gallery) ? 
-                <div className='margin-top-l'>
+          ) : (
+            <div className="flex center">
+              {gallery ? (
+                <div className="margin-top-l">
                   <div>There are no art pieces in this exhibition yet</div>
-                  <Link to={ `/apply/${ url } ` } className='margin-top text-grey'>You may submit your artwork here!</Link>
+                  <Link to={`/apply/${url} `} className="margin-top text-grey">
+                    You may submit your artwork here!
+                  </Link>
                 </div>
+<<<<<<< HEAD
               :
                 <div className='block-loading'><div className='loading'><div></div><div></div></div></div>
               }
@@ -247,12 +337,80 @@ export default function Exhibition({ updateScroll }) {
                     { curator.website && <div className='margin-top-xs'><img src={ Web } className='curator-icon-web pointer' alt='Website' onClick={ () => openLink(curator.website) } /></div> }
                     { curator.twitter && <div className='margin-top-xs'><img src={ Twitter } className='curator-icon pointer' alt='Twitter' onClick={ () => openLink(`https://twitter.com/${ curator.twitter }`) } /></div> }
                     { curator.instagram && <div className='margin-top-xs'><img src={ Instagram } className='curator-icon pointer' alt='Instagram' onClick={ () => openLink(`https://instagram.com/${ curator.instagram }`) } /></div> }
+=======
+              ) : (
+                <div className="block-loading">
+                  <div className="loading">
+                    <div></div>
+                    <div></div>
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
                   </div>
                 </div>
-              );
-            })}
+              )}
+            </div>
+          )}
+          <div className="margin-top-l" />
+          <ReactAutolinker text={exhibition.description} className="text-mid" />
+          {exhibition && exhibition.curators && (
+            <div className="margin-top-l center">Curated By</div>
+          )}
+          <div className="text-s margin-top-s center">
+            {exhibition &&
+              exhibition.curators &&
+              exhibition.curators.map((curator, index) => {
+                return (
+                  <div className="margin-top" key={index}>
+                    <div>
+                      <strong>
+                        {curator.artistName
+                          ? `${curator.artistName}`
+                          : `${curator.first} ${curator.last}`}
+                      </strong>
+                    </div>
+                    <div className="flex center">
+                      {curator.website && (
+                        <div className="margin-top-xs">
+                          <img
+                            src={Web}
+                            className="curator-icon-web pointer"
+                            alt="Website"
+                            onClick={() => openLink(curator.website)}
+                          />
+                        </div>
+                      )}
+                      {curator.twitter && (
+                        <div className="margin-top-xs">
+                          <img
+                            src={Twitter}
+                            className="curator-icon pointer"
+                            alt="Twitter"
+                            onClick={() =>
+                              openLink(`https://twitter.com/${curator.twitter}`)
+                            }
+                          />
+                        </div>
+                      )}
+                      {curator.instagram && (
+                        <div className="margin-top-xs">
+                          <img
+                            src={Instagram}
+                            className="curator-icon pointer"
+                            alt="Instagram"
+                            onClick={() =>
+                              openLink(
+                                `https://instagram.com/${curator.instagram}`
+                              )
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
+<<<<<<< HEAD
       }
       { (id && gallery && gallery.length) &&
         <div>
@@ -264,6 +422,40 @@ export default function Exhibition({ updateScroll }) {
         </div>
       }
       <div ref={ nftRef } className='exhibition-height' />
+=======
+      )}
+      {id && gallery && gallery.length && (
+        <div className="gallery-min-height">
+          <NFT
+            key={order - 2}
+            small={small}
+            nft={gallery[order - 2]}
+            src={src1}
+            contract={exhibition.contract}
+            important
+            hidden
+          />
+          <NFT
+            key={order - 1}
+            small={small}
+            nft={gallery[order - 1]}
+            src={src2}
+            contract={exhibition.contract}
+            important
+          />
+          <NFT
+            key={order}
+            small={small}
+            nft={gallery[order]}
+            src={src3}
+            contract={exhibition.contract}
+            important
+            hidden
+          />
+        </div>
+      )}
+      <div className="margin-top-l" />
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
     </div>
   );
 }

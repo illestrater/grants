@@ -35,16 +35,20 @@ git clone https://github.com/illestrater/grants.git
 cd grants
 
 # Install dependencies
-yarn (or npm install)
+yarn
+
+# Use correct node engine for OpenSea packages
+nvm install 14.15.11
+nvm use 14.15.11
 
 # Start development server
-yarn dev (or npm run dev)
+yarn dev 
 
 # Build for production
-yarn build (or npm run build)
+yarn build 
 
 # Start production server
-yarn start (or npm start)
+yarn start
 ```
 
 
@@ -68,7 +72,6 @@ WALLET_PRIVATE_KEY = <your private key for providing minting services on behalf 
 FACTORY_ADDRESS = 0xb5b933063331ed686bF0668a650e434164E637Ef
 ETHERSCAN = <etherscan key for verifying factory deployed contracts*>
 ```
-
 
 ### Creator Royalties Standard
 

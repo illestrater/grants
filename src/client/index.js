@@ -4,9 +4,9 @@ import { StoreComponent, store } from './redux';
 import { useStoreRehydrated } from 'easy-peasy';
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { ModalProvider } from "react-modal-hook";
-import ScrollToTop from './Components/Tools/ScrollToTop';
-import Header from './Components/Header';
-import Footer from './Components/Footer';
+import ScrollToTop from "./Components/Tools/ScrollToTop";
+import Header from "./Components/Header";
+import Footer from "./Components/Footer";
 import Home from "./Components/Home";
 import Ethos from "./Components/Ethos";
 import Learn from "./Components/Learn";
@@ -31,7 +31,7 @@ import Profile from "./Components/Profile";
 import Exhibition from "./Components/Exhibition";
 import VerifyEmail from "./Components/VerifyEmail";
 
-import './styles.scss';
+import "./styles.scss";
 
 const App = () => {
   function WaitForStateRehydration({ children }) {
@@ -90,7 +90,7 @@ const App = () => {
                     <Exhibition updateScroll={ updateScroll } />
                   )} />
                 </Switch>
-                <Footer/>
+                <Footer />
               </WaitForStateRehydration>
             </div>
           </div>
@@ -98,8 +98,7 @@ const App = () => {
       </StoreComponent>
     </BrowserRouter>
   );
-}
-
+};
 
 console.log(`
 ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
@@ -130,11 +129,12 @@ console.log(`
 ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
 ♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥♥
 
-`)
+`);
 
 const rootElement = document.getElementById("root");
 ReactDOM.render(
   <ModalProvider>
     <App />
-  </ModalProvider>
-, rootElement);
+  </ModalProvider>,
+  rootElement
+);

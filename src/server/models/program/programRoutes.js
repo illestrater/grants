@@ -1,5 +1,6 @@
-const program = require('./programController');
+const program = require("./programController");
 
+<<<<<<< HEAD
 module.exports = (app) => {
   app.get('/api/program/getPrograms', program.getPrograms);
   app.post('/api/program/getProgram', program.getProgram);
@@ -35,3 +36,6 @@ module.exports = (app) => {
   app.post('/api/program/flagApplicant', program.flagApplicant);
   app.post('/api/program/removeFlag', program.removeFlag);
 };
+=======
+module.exports = (app) => {};
+>>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
