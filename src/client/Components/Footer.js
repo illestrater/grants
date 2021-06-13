@@ -3,21 +3,9 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-<<<<<<< HEAD
-    <div className='footer'>
-      <div className='center text-s'>
-        Supported by <Link to='/team' className='remove-a'><div className='text-grey'>Sevens Foundation Committee</div></Link><br /><br />
-        Developed by <a className='text-rainbow pointer' onClick={ () => openLink('https://y.at/%F0%9F%91%89%F0%9F%8E%B1%F0%9F%95%B3') }>illestrater</a><br />
-      </div>
-      <div className='social-icons margin-top flex center'>
-        <img src={ Twitter } className='social-icon' alt='Twitter' onClick={ () => openLink('https://twitter.com/sevensgrant') } />
-        <img src={ Instagram } className='social-icon' alt='Instagram' onClick={ () => openLink('https://instagram.com/sevensgrant') } />
-        <img src={ Discord } className='social-icon' alt='Instagram' onClick={ () => openLink('https://discord.gg/YB4HDKwxyc') } />
-        <a href='mailto:sevens@grants.art'><img src={ Email } className='social-icon' alt='Email' /></a>
-=======
     <div className="footer">
       <div className="center text-s">
-        Curated by{" "}
+        Supported by{" "}
         <Link href="/team">
           <a className="remove-a">
             <div className="text-grey">Sevens Foundation Committee</div>
@@ -54,7 +42,6 @@ export default function Header() {
         <a href="mailto:tim@grants.art">
           <img src="/assets/email.png" className="w-8 h-8" alt="Email" />
         </a>
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
       </div>
     </div>
   );

@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 import React, { useEffect, useState, useRef } from 'react';
-=======
-import React, { useEffect, useState } from "react";
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 import { useParams } from "react-router-dom";
 import { useStoreState } from "easy-peasy";
 import { apiUrl } from "../baseUrl";
 import { Link } from "react-router-dom";
-<<<<<<< HEAD
 import moment from 'moment';
 import ReactAutolinker from 'react-autolinker';
 import ReactModal from 'react-modal';
@@ -16,12 +11,6 @@ import FullScreen from '../assets/fullscreen.png';
 import MinScreen from '../assets/minscreen.png';
 import Muted from '../assets/muted.png';
 import Unmuted from '../assets/unmuted.png';
-=======
-import moment from "moment";
-import ReactAutolinker from "react-autolinker";
-import ReactModal from "react-modal";
-import DatePicker from "react-mobile-datepicker";
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 
 import Resizer from "./Tools/Resizer.js";
 

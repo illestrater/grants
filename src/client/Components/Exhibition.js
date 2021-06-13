@@ -1,14 +1,7 @@
-<<<<<<< HEAD
 import React, { useEffect, useReducer, useState, useRef } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useParams, useHistory } from "react-router-dom";
 import { useStoreState } from 'easy-peasy';
-=======
-import React, { useEffect, useReducer, useState, useRef } from "react";
-import { useSwipeable } from "react-swipeable";
-import { useParams, useLocation, useHistory } from "react-router-dom";
-import { useStoreState } from "easy-peasy";
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 import { Link } from "react-router-dom";
 import ReactAutolinker from "react-autolinker";
 import GenesisNFT from "./ExhibitionNFT.js";
@@ -30,12 +23,8 @@ const NFT = React.memo(GenesisNFT);
 
 export default function Exhibition({ updateScroll }) {
   const history = useHistory();
-<<<<<<< HEAD
   const small = useStoreState(state => state.app.small);
   const nftRef = useRef();
-=======
-  const small = useStoreState((state) => state.app.small);
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
   const { url, id } = useParams();
   const order = Number(id);
 
@@ -44,7 +33,6 @@ export default function Exhibition({ updateScroll }) {
   const [enterId, setEnterId] = useState(null);
   const [ethPrice, setEthPrice] = useState(null);
   useEffect(() => {
-<<<<<<< HEAD
     updateScroll(false);
     fetch(`${ apiUrl() }/program/getGallery`, {
       method: 'POST',
@@ -73,19 +61,6 @@ export default function Exhibition({ updateScroll }) {
       }
     });
   }, [])
-=======
-    fetch(`${apiUrl()}/program/getGallery`, {
-      method: "POST",
-      body: JSON.stringify({ program: url }),
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json && json.gallery) setGallery(json.gallery);
-        if (json && json.name) setExhibition({ ...json, gallery: undefined });
-      });
-  }, []);
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 
   const [preload, dispatch] = useReducer((preload, { type, value }) => {
     if (type === "add") {
@@ -139,11 +114,7 @@ export default function Exhibition({ updateScroll }) {
         }
       }
     }
-<<<<<<< HEAD
   }, [enterId])
-=======
-  }, [gallery]);
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
 
   function updatePreload(direction, currentToken) {
     let inc;
@@ -215,14 +186,7 @@ export default function Exhibition({ updateScroll }) {
       }
     },
     onSwipedLeft: (eventData) => {
-<<<<<<< HEAD
       if (id) { updatePreload('next', order); history.push(`/${ url }/${ switchPage('next') }`) }
-=======
-      if (id) {
-        updatePreload("next", order);
-        history.push(`/${url}/${switchPage("next")}`);
-      }
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
     },
     preventDefaultTouchmoveEvent: true,
   });
@@ -281,41 +245,24 @@ export default function Exhibition({ updateScroll }) {
           </Link>
         )}
       </div>
-<<<<<<< HEAD
       { !id &&
         <div className='line-breaks'>
           { (gallery && gallery.length) ?
             <div className='margin-top-l center'>
               <Link to={ `/${ url }/${ enterId  }` } className='button'>
                 <span className='text-l'>Enter Gallery</span>
-=======
-      {!id && (
-        <div className="line-breaks">
-          {gallery && gallery.length ? (
-            <div className="margin-top-l center">
-              <Link
-                to={`/${url}/${
-                  Math.floor(
-                    Math.random() * (gallery.length ? gallery.length : 1)
-                  ) + 1
-                }`}
-                className="button"
-              >
-                <span className="text-l">Enter Gallery</span>
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
               </Link>
               <div className='margin-top'>{ gallery.length } Artworks</div>
             </div>
-          ) : (
+          :
             <div className="flex center">
-              {gallery ? (
+              {gallery ? 
                 <div className="margin-top-l">
                   <div>There are no art pieces in this exhibition yet</div>
                   <Link to={`/apply/${url} `} className="margin-top text-grey">
                     You may submit your artwork here!
                   </Link>
                 </div>
-<<<<<<< HEAD
               :
                 <div className='block-loading'><div className='loading'><div></div><div></div></div></div>
               }
@@ -337,13 +284,6 @@ export default function Exhibition({ updateScroll }) {
                     { curator.website && <div className='margin-top-xs'><img src={ Web } className='curator-icon-web pointer' alt='Website' onClick={ () => openLink(curator.website) } /></div> }
                     { curator.twitter && <div className='margin-top-xs'><img src={ Twitter } className='curator-icon pointer' alt='Twitter' onClick={ () => openLink(`https://twitter.com/${ curator.twitter }`) } /></div> }
                     { curator.instagram && <div className='margin-top-xs'><img src={ Instagram } className='curator-icon pointer' alt='Instagram' onClick={ () => openLink(`https://instagram.com/${ curator.instagram }`) } /></div> }
-=======
-              ) : (
-                <div className="block-loading">
-                  <div className="loading">
-                    <div></div>
-                    <div></div>
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
                   </div>
                 </div>
               )}
@@ -410,7 +350,6 @@ export default function Exhibition({ updateScroll }) {
               })}
           </div>
         </div>
-<<<<<<< HEAD
       }
       { (id && gallery && gallery.length) &&
         <div>
@@ -422,40 +361,6 @@ export default function Exhibition({ updateScroll }) {
         </div>
       }
       <div ref={ nftRef } className='exhibition-height' />
-=======
-      )}
-      {id && gallery && gallery.length && (
-        <div className="gallery-min-height">
-          <NFT
-            key={order - 2}
-            small={small}
-            nft={gallery[order - 2]}
-            src={src1}
-            contract={exhibition.contract}
-            important
-            hidden
-          />
-          <NFT
-            key={order - 1}
-            small={small}
-            nft={gallery[order - 1]}
-            src={src2}
-            contract={exhibition.contract}
-            important
-          />
-          <NFT
-            key={order}
-            small={small}
-            nft={gallery[order]}
-            src={src3}
-            contract={exhibition.contract}
-            important
-            hidden
-          />
-        </div>
-      )}
-      <div className="margin-top-l" />
->>>>>>> d9ad741ace64da93b1c85c5fa739406f79430002
     </div>
   );
 }
