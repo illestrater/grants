@@ -15,8 +15,15 @@ function openLink(page)
   win.focus();
 }
 
+export default function DecidedBlock({ nft, undo, type, blind, metrics, user, finalScore, data, index, width }) {
+  nft = data;
+  undo = nft.undo;
+  type = nft.type;
+  blind = nft.blind;
+  metrics = nft.metrics;
+  user = nft.me;
+  finalScore = nft.finalScore;
 
-export default function DecidedBlock({ nft, undo, type, blind, metrics, user, finalScore }) {
   const [loaded, didLoad] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const imageType = nft.artWeb.split('.')[1];

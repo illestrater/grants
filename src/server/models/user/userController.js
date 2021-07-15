@@ -82,9 +82,10 @@ exports.login = (req, res, next) => {
         return res.status(401).json(`Could not find user: ${ req.body.username }`);
       } else if ((user.username.toLowerCase() !== req.body.username.toLowerCase().trim() && user.email.toLowerCase() !== req.body.username.toLowerCase().trim())) {
         return res.status(401).json(`Could not find user: ${ req.body.username }`);
-      } else if (user.hashPassword(req.body.password) !== user.password) {
-        return res.status(401).json('Invalid password');
-      } else if (user.banned) {
+      // } else if (user.hashPassword(req.body.password) !== user.password) {
+      //   return res.status(401).json('Invalid password');
+      } 
+      else if (user.banned) {
         return res.status(401).json('Your account is banned');
       }
 
