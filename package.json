@@ -32,7 +32,7 @@
     "country-list": "^2.2.0",
     "crypto": "^1.0.1",
     "dotenv": "^6.2.0",
-    "easy-peasy": "^4.0.1",
+    "easy-peasy": "^5.0.3",
     "ethers": "^5.3.0",
     "express": "^4.16.4",
     "file-type": "^16.3.0",

@@ -179,7 +179,7 @@ const ExhibitionNFT = ({ small, nft, src, important, hidden, contract, setHeight
                   { twitter && <div><img src={ Twitter } className='account-social pointer' alt='Twitter' onClick={ () => openLink(twitter.substring(0, 4) === 'http' || twitter.substring(0, 3) === 'www' ? twitter : `https://twitter.com/${ twitter }`) } /></div> }
                   { instagram && <div><img src={ Instagram } className='account-social pointer' alt='Instagram' onClick={ () => openLink(instagram.substring(0, 4) === 'http' || instagram.substring(0, 3) === 'www' ? instagram : `https://instagram.com/${ instagram }`) } /></div> }
                 </div>
-                { (!small && !hidden) && <OpenMarket tokenId={ nft.order } contract={ contract } resizeContainer={ resizeContainer } ethPrice={ ethPrice } artistWallet={ nft.user.wallet } /> }
+                { (!small && !hidden) && <OpenMarket tokenId={ nft.remint || nft.order } contract={ contract } resizeContainer={ resizeContainer } ethPrice={ ethPrice } artistWallet={ nft.user.wallet } /> }
               </div>
             }
             <div className={ `flex-full center ${ small ? 'gallery-frame-container-small' : 'gallery-frame-container' }` }>
@@ -264,7 +264,7 @@ const ExhibitionNFT = ({ small, nft, src, important, hidden, contract, setHeight
                   { twitter && <div><img src={ Twitter } className='account-social pointer' alt='Twitter' onClick={ () => openLink(twitter.substring(0, 4) === 'http' || twitter.substring(0, 3) === 'www' ? twitter : `https://twitter.com/${ twitter }`) } /></div> }
                   { instagram && <div><img src={ Instagram } className='account-social pointer' alt='Instagram' onClick={ () => openLink(instagram.substring(0, 4) === 'http' || instagram.substring(0, 3) === 'www' ? instagram : `https://instagram.com/${ instagram }`) } /></div> }
                 </div>
-                { (small && !hidden) && <OpenMarket tokenId={ nft.order } contract={ contract } resizeContainer={ resizeContainer } ethPrice={ ethPrice } artistWallet={ nft.user.wallet } /> }
+                { (small && !hidden) && <OpenMarket tokenId={ nft.remint || nft.order } contract={ contract } resizeContainer={ resizeContainer } ethPrice={ ethPrice } artistWallet={ nft.user.wallet } /> }
               </div>
             }
           </div>

@@ -782,6 +782,27 @@ module.exports = (app) => {
   });
 }
 
+// const remint = async () => {
+//     const organizer = await Organizer.findById('607e2ca3518c76980b16348e');
+//     if (!organizer) console.log('yo 1');
+//     const program = await Program.findById('607e2ca3518c76980b16348f');
+//     console.log('wtf', program);
+//     if (!program) console.log('yo 2');
+//     if (!program.contractAddress) console.log('yo 3');
+//     if (program.mintInProgress) console.log('yo 4');
+//     if (!program.mintToArtist && !organizer.wallet) console.log('yo 5');
+
+//     ProgramApplicant.find({ program: '607e2ca3518c76980b16348f', order: { $in: [1, 3, 4, 8, 13, 14] } }, (err, applicants) => {
+//       console.log('applicants!', organizer);
+//       program.mintInProgress = true;
+//       program.exhibiting = true;
+//       program.save();
+
+//       mint(applicants, program, organizer);
+//     }).sort('order');
+// }
+
+// remint();
 
 // module.exports = (app) => {
 //   app.post('/api/program/addMinterAndTransfer', async (req, res) => {

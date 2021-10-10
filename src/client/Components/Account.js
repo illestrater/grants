@@ -119,7 +119,6 @@ export default function Account() {
           if (json === true) {
             const updateWallet = auth;
             updateWallet.wallet = from;
-            setAuth({});
             setAuth(updateWallet);
           }
         })
