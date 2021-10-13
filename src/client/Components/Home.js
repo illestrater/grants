@@ -25,19 +25,16 @@ export default function Gallery() {
     <div className='content-block' ref={ contentRef }>
       <Resizer />
       <div className='text-l flex'>
-        <div className='margin-right-s'>
-          <strong>Sevens Foundation</strong>
+        <div className='text-s margin-right-l'>
+          We are a non-profit organization dedicated to elevating artists. We provide a framework
+          for curators and organizations to connect through art exhibitions and grants with charitable or benevolent
+          intentions. We empower emerging artists by highlighting them, operating pro-bono, taking 0% profits, and providing a unique
+          and innovative tool for collaboration.
         </div>
         <div className='flex-full' />
         <div className='text-s center'>
           <Link to='/curation' className='small-button'><div className='text-rainbow'>Curation</div></Link>
         </div>
-      </div>
-      <div className='text-s margin-top-s text-desc'>
-        We are a non-profit organization dedicated to elevating artists. We provide a framework
-        for curators and organizations to connect through art exhibitions and grants with charitable or benevolent
-        intentions. We empower emerging artists by highlighting them, operating pro-bono, taking 0% profits, and providing a unique
-        and innovative tool for collaboration.
       </div>
       <div className='cols'>
         { !programs || !programs.length ?

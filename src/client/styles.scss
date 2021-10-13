@@ -237,6 +237,10 @@ a {
   margin-right: 1rem;
 }
 
+.margin-right-l {
+  padding-right: 3rem;
+}
+
 .grey {
   color: grey;
 }
@@ -325,8 +329,12 @@ a {
 }
 
 .logo {
-  width: 4rem;
-  height: 4rem;
+  width: 10rem;
+}
+
+.logo-small {
+  width: 3rem;
+  height: 3rem;
 }
 
 .header {
@@ -1661,9 +1669,9 @@ input[type=number] {
     font-size: 0.8rem;
   }
 
-  .logo {
-    width: 3rem;
-    height: 3rem;
+  .logo-small {
+    width: 2rem;
+    height: 2rem;
   }
 
   .header {

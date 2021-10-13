@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { useStoreState } from 'easy-peasy';
 
 import '../styles.scss';
-import Logo from '../assets/logo.png';
+import Logo from '../assets/SF_Lockup_Black.svg';
+import LogoSmall from '../assets/SF_Mark_Black.svg';
 
 export default function Header() {
   const auth = useStoreState(state => state.user.auth);
@@ -11,10 +12,12 @@ export default function Header() {
 
   const path = location.pathname.split('/')[1];
 
+  const small = useStoreState(state => state.app.small);
+
   return (
     <div className='header flex'>
       <Link to='/' className='flex remove-a'>
-        <img src={ Logo } className='logo' alt='Twitter' />
+        <img src={ small ? LogoSmall : Logo } className={ small ? 'logo-small' : 'logo' } alt='Twitter' />
       </Link>
       <div className='flex-full' />
       <div className='nav-container'>
