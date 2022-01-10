@@ -1084,7 +1084,8 @@ exports.removeFlag = (req, res) => {
 
 
 async function downloadGallery() {
-  ProgramApplicant.find({ program: '6070ea37982e298b11fe062b' }, async (err, artists) => {
+  ProgramApplicant.find({ program: '612464edb7c20bcf6f7aee17', score: { $gte: 22.45 } }, async (err, artists) => {
+    console.log('yo wtf', artists);
     for (const artist of artists) {
       await new Promise((resolve, reject) => {
         const params = {

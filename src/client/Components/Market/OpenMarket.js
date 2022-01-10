@@ -541,6 +541,12 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
               { address && <img src={ OpenSeaLogo } className='block-social' alt='OpenSea' onClick={ () => openLink(asset.permalink) } /> }
             </div>
           </div>
+          <div className='small-button' onClick={ () => openLink(asset.permalink) }>
+            View on OpenSea
+          </div>
+          <div className='text-s margin-top-s'>
+            Sevens' marketplace features are currently unavailable. Please view the piece on OpenSea!
+          </div>
           { !isOwner ?
             <div className='flex margin-top-s'>
               <div className='form__group field'>

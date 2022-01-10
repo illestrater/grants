@@ -9731,20 +9731,20 @@
                       {
                         "externalReferences": [
                           {
-                            "codehash": {
-                              "declaration": 341,
-                              "isOffset": false,
-                              "isSlot": false,
-                              "src": "11883:8:0",
-                              "valueSize": 1
-                            }
-                          },
-                          {
                             "account": {
                               "declaration": 335,
                               "isOffset": false,
                               "isSlot": false,
                               "src": "11907:7:0",
+                              "valueSize": 1
+                            }
+                          },
+                          {
+                            "codehash": {
+                              "declaration": 341,
+                              "isOffset": false,
+                              "isSlot": false,
+                              "src": "11883:8:0",
                               "valueSize": 1
                             }
                           }
