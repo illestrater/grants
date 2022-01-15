@@ -323,6 +323,20 @@ exports.twitter = async (req, res, next) => {
 }
 
 
+exports.getBids = async (req, res, next) => {
+  return await fetch(`https://api.opensea.io/wyvern/v1/orders?asset_contract_address=${ req.body.contract }&token_ids=${ req.body.tokenId }`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'X-API-KEY': `${ ENV.OPENSEA_API }`,
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    res.json(data);
+  })
+}
+
+
 // FIX BAD MAPPING
 
 // setTimeout(() => {

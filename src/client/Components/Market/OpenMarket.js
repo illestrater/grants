@@ -9,6 +9,7 @@ import DatePicker from 'react-mobile-datepicker';
 import moment from 'moment';
 import Fortmatic from 'fortmatic';
 import Web3 from 'web3';
+import { apiUrl } from '../../baseUrl';
 
 import OpenSeaLogo from '../../assets/opensea.png';
 import AuctionTimer from './AuctionTimer';
@@ -123,26 +124,31 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
   }, [retryAuction])
 
   async function pollBids() {
-    const orders = await fetch(`https://api.opensea.io/api/v1/assets?asset_contract_address=${ contract }&token_ids=${ tokenId }`, {
-      method: 'GET',
+
+    // const orders = await fetch(`https://api.opensea.io/api/v1/assets?asset_contract_address=${ contract }&token_ids=${ tokenId }`, {
+    const orders = await fetch(`${ apiUrl() }/getBids`, {
+      method: 'POST',
+      body: JSON.stringify({ contract, tokenId }),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
     }).then(res => res.json())
     .then(async json => {
-      if (json.detail) setRetryAuction(retryAuction + 1);
-      else if (json.orders && json.orders.length) {
-        setRetryAuction(0);
-        const auction = json.orders.find(order => order.side === 1);
-        if (auction) setAuctionEnd(new Date(`${ auction.closing_date }.000Z`).getTime());
+      if (json && json.orders && json.orders.length) return json.orders;
+      // if (json.orders[0].detail) setRetryAuction(retryAuction + 1);
+      // else if (json.assets[0].sell_orders && json.assets[0].sell_orders.length) {
+      //   setRetryAuction(0);
+      //   const auction = json.assets[0].sell_orders.find(order => order.side === 1);
+      //   if (auction) setAuctionEnd(new Date(`${ auction.closing_date }.000Z`).getTime());
 
-        return json.orders
-      }
+      //   return json.assets[0].sell_orders
+      // }
     })
 
     let newBids = [];
     let foundListed = false;
+    console.log('found', orders);
     if (orders && orders.length) {
       let foundEnd = false;
       orders.forEach(order => {
@@ -163,13 +169,16 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
         }
       })
 
-      if (newBids && bids && newBids.length !== bids.length && seaport) {
-        const { count, orders } = await seaport.api.getOrders({
+      // if (newBids && bids && newBids.length !== bids.length && seaport) {
+      if (seaport) {
+        const { count, orders: gotOrders } = await seaport.api.getOrders({
           asset_contract_address: contract,
           token_id: tokenId,
         });
 
-        setSeaportOrders(orders);
+        console.log('got orders', gotOrders);
+
+        setSeaportOrders(gotOrders);
       }
 
       if (newBids) setBids(newBids);
@@ -329,7 +338,6 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
       let foundOrder;
       if (order) foundOrder = seaportOrders.find(o => o.hash.toLowerCase() === order.order_hash);
       else foundOrder = seaportOrders.find(o => o.side === 1 && !o.closing_date);
-      console.log('wtf', seaportOrders);
       await seaport.fulfillOrder({
         order: foundOrder,
         accountAddress: provider.selectedAddress,
@@ -541,13 +549,15 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
               { address && <img src={ OpenSeaLogo } className='block-social' alt='OpenSea' onClick={ () => openLink(asset.permalink) } /> }
             </div>
           </div>
-          <div className='small-button' onClick={ () => openLink(asset.permalink) }>
-            View on OpenSea
+          <div className='margin-top-s'>
+            <div className='small-button' onClick={ () => openLink(asset.permalink) }>
+              View on OpenSea
+            </div>
           </div>
-          <div className='text-s margin-top-s'>
+          {/* <div className='text-s margin-top-s'>
             Sevens' marketplace features are currently unavailable. Please view the piece on OpenSea!
-          </div>
-          { !isOwner ?
+          </div> */}
+          {/* { !isOwner ?
             <div className='flex margin-top-s'>
               <div className='form__group field'>
                 <input type='number' className='form__field' placeholder='Bid Amount' name='amount' id='amount' required maxLength='100' onChange={e => { setBid(e.target.value); setBidErr(null); } } />
@@ -569,14 +579,14 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
             <div className='text-err text-mid margin-top-s'>
               { bidErr }
             </div>
-          }
+          } */}
           { (auction && auctionEnd) &&
             <div className='margin-top'>
-              <div className='text-s'>Live Auction</div>
+              <div className='text-s'>Sale Details</div>
               <div className='margin-top-xs text-mid'>
                 <span className='text-grey pointer' onClick={ () => setInfoOpen(true) }>
                   { auction.base_price !== '0' ?
-                    <strong>Ξ{ Number(Web3.utils.fromWei((Math.round(Number(auction.base_price).toFixed(2) * 1000) / 100).toString(), 'ether')).toFixed(2) } Reserve { reserveMet === 0 ? 'Price' : 'Met' }</strong>
+                    <strong>Ξ{ Number(Web3.utils.fromWei((Math.round(Number(auction.base_price).toFixed(2) * 1000) / 1000).toString(), 'ether')).toFixed(2) } { auction.r ? 'Current Price' : 'Minimum Bid' }</strong>
                     :
                     <strong>Reserve Price Unknown</strong>
                   }
@@ -589,7 +599,7 @@ export default function OpenMarket({ tokenId, contract, resizeContainer, ethPric
             <div className='margin-top-s flex'>
               <div>
                 <div className='text-s'>List Price</div>
-                Ξ{ Web3.utils.fromWei(listed.current_price, 'ether') }
+                Ξ{ Web3.utils.fromWei(Number(listed.current_price).toString(), 'ether') }
               </div>
               <div className='small-space' />
               { listed.maker.address.toLowerCase() !== connectedAddress && <input type='submit' value='Purchase Artwork' className='small-button' onClick={ purchase } /> }
